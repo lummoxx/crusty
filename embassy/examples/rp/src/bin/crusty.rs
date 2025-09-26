@@ -6,6 +6,7 @@ use core::str::from_utf8;
 use cyw43::{Control, JoinOptions};
 use cyw43_pio::{PioSpi, DEFAULT_CLOCK_DIVIDER};
 use defmt::*;
+use embassy_rp::pwm::SetDutyCycle;
 use defmt::{info, warn};
 use embassy_executor::Spawner;
 use embassy_net::Ipv4Address;
@@ -52,6 +53,7 @@ bind_interrupts!(struct Irqs {
 
 const WIFI_NETWORK: &str = ""; // change to your network SSID
 const WIFI_PASSWORD: &str = ""; // change to your network password
+
 
 #[embassy_executor::task]
 async fn cyw43_task(runner: cyw43::Runner<'static, Output<'static>, PioSpi<'static, PIO0, 0, DMA_CH0>>) -> ! {
@@ -562,7 +564,6 @@ async fn ultrasonic_task(mut trig: Output<'static>, echo: Input<'static>, car: &
         if ping_time > 1.0 {
             let distance = ping_time * 340.0 / 2.0 / 10000.0;
 
-            // Only act on valid range: 2cm < distance < 300cm and < 3.1cm for stop , distance > 2.0 &&
             if distance < 25.1 {
                 debug!("distance: {} ", distance);
                 let mut car_guard = car.lock().await;

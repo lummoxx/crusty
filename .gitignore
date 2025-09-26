@@ -1,0 +1,16 @@
+# Node.js dependencies
+node_modules/
+
+# Rust build artifacts
+target/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+*.tmp
+
+# VSCode settings (optional, if you don't want to share them)
+.vscode/
