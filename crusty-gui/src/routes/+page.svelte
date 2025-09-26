@@ -24,7 +24,7 @@
 
   // State management
   let speed = $state(50);
-  let ipAddress = $state("192.168.0.2");
+  let ipAddress = $state("10.5.1.8");
 
   // Handle key presses for keyboard control
   async function handleKeyDown(event: KeyboardEvent) {
@@ -39,6 +39,10 @@
     } else if (event.key === " ") {
       // Spacebar
       stopCar();
+    } else if (event.key === 'v') {
+      speed = Math.min(speed + 10, 100);
+    } else if (event.key === 'b') {
+      speed = Math.max(speed - 10, 0);
     }
   }
 </script>
@@ -190,7 +194,8 @@
         <li>↑ - Move Forward</li>
         <li>↓ - Move Backward</li>
         <li>← - Turn Left</li>
-        <li>→ - Turn Right</li>
+        <li>v - Accelerate 10%</li>
+        <li>b - Brake 10%</li>
         <li>Space - Stop</li>
       </ul>
     </div>

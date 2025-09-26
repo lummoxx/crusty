@@ -1,3 +1,11 @@
+/// Direction of car movement
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Direction {
+    Still,
+    Forward,
+    Backward,
+}
+
 use embassy_rp::pwm::{Pwm, PwmOutput, SetDutyCycle};
 
 /// Structure representing a single wheel with two PWM outputs
@@ -32,37 +40,68 @@ pub struct Car<'a> {
     front_right: Wheel<'a>,
     rear_left: Wheel<'a>,
     rear_right: Wheel<'a>,
+    pub speed: u8, // 0-100
+    pub direction: Direction,
 }
 
 impl<'a> Car<'a> {
+    /// Set the car speed, clamped to 0-100
+    pub async fn set_speed(&mut self, speed: u8) {
+        defmt::info!("Changing speed from {}% to {}%", self.speed, speed);
+        self.speed = speed;
+    }
+
     /// Move the car forward
     pub async fn forward(&mut self, speed: u8) {
-        defmt::info!("Moving car forward at {}% speed", speed);
+        defmt::info!("Moving car forward at {}% speed", self.speed);
         self.front_left.forward(speed).await;
         self.front_right.forward(speed).await;
         self.rear_left.forward(speed).await;
         self.rear_right.forward(speed).await;
+        self.direction = Direction::Forward;
     }
 
     /// Move the car backward
     pub async fn backward(&mut self, speed: u8) {
         defmt::info!("Moving car backward at {}% speed", speed);
-        // TODO
-
+        self.front_left.back(speed).await;
+        self.front_right.back(speed).await;
+        self.rear_left.back(speed).await;
+        self.rear_right.back(speed).await;
+        self.direction = Direction::Backward;
     }
 
     /// Turn the car left 
     pub async fn turn_left(&mut self, speed: u8) {
         defmt::info!("Turning car left at {}% speed", speed);
-        // TODO
+        self.front_left.stop().await;
+        self.rear_left.stop().await;
+
+        if self.direction == Direction::Forward {
+            self.front_right.forward(speed).await;
+            self.rear_right.forward(speed).await;
+        }
+        else {
+            self.front_right.back(speed).await;
+            self.rear_right.back(speed).await;
+        }
 
     }
 
     /// Turn the car right 
     pub async fn turn_right(&mut self, speed: u8) {
         defmt::info!("Turning car right at {}% speed", speed);
-        // TODO
+        self.front_right.stop().await;
+        self.rear_right.stop().await;
 
+        if self.direction == Direction::Forward {
+            self.front_left.forward(speed).await;
+            self.rear_left.forward(speed).await;
+        }
+        else {
+            self.front_left.back(speed).await;
+            self.rear_left.back(speed).await;
+        }
     }
 
     /// Stop all wheels
@@ -72,6 +111,56 @@ impl<'a> Car<'a> {
         self.front_right.stop().await;
         self.rear_left.stop().await;
         self.rear_right.stop().await;
+        self.direction = Direction::Still;
+        self.set_speed(0);
+    }
+
+
+
+    /// Speed up 10%
+    pub async fn gas(&mut self) {
+        let speed = (self.speed + 10).min(100);
+        defmt::info!("Moving car forward at {}% speed", speed);
+        self.set_speed(speed).await;
+        self.front_left.forward(speed).await;
+        self.front_right.forward(speed).await;
+        self.rear_left.forward(speed).await;
+        self.rear_right.forward(speed).await;
+        self.direction = Direction::Forward;
+    }
+    /// Slow down 10 %
+    pub async fn brake(&mut self) {
+        let speed = (self.speed - 10).max(0);
+        defmt::info!("Moving car forward at {}% speed", speed);
+        self.set_speed(speed).await;
+        self.front_left.forward(speed).await;
+        self.front_right.forward(speed).await;
+        self.rear_left.forward(speed).await;
+        self.rear_right.forward(speed).await;
+        self.direction = Direction::Forward;
+    }
+
+    pub async fn reverse(&mut self) {
+        self.front_left.back(30).await;
+        self.front_right.back(30).await;
+        self.rear_left.back(30).await;
+        self.rear_right.back(30).await;
+        self.direction = Direction::Backward;
+    }
+    /// Turn the car left 
+    pub async fn brake_left(&mut self) {
+        defmt::info!("Turning car left");
+        self.front_left.stop().await;
+        self.rear_left.stop().await;
+
+    }
+
+    /// Turn the car right 
+    pub async fn brake_right(&mut self) {
+        defmt::info!("Turning car right");
+        self.front_right.stop().await;
+        self.rear_right.stop().await;
+
     }
 }
 
@@ -111,5 +200,7 @@ pub fn initialize_car<'a>(pwm_fl: Pwm<'a>, pwm_fr: Pwm<'a>, pwm_rl: Pwm<'a>, pwm
         front_right,
         rear_left,
         rear_right,
+        speed: 50, // default speed
+        direction: Direction::Still,
     }
 }
