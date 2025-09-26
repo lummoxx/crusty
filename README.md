@@ -52,16 +52,26 @@ note: It must be the same wifi as your local machine is running on.
 `cargo install create-tauri-app --locked`
 `npm install --global yarn`
 
+## Local changes
+- Set Wifi SSID and password (same as your computer is connected to) in crusty.rs
+```
+const WIFI_NETWORK: &str = ""; // change to your network SSID
+const WIFI_PASSWORD: &str = ""; // change to your network password
+````
+- Choose a unique IP address in the same subnet as your computer and update net_config.address in crusty.rs
+- Choose a unique gateway in the same subnet as your computer and update net_config.gateway in crusty.rs
+```
+    let net_config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
+        address: Ipv4Cidr::new(Ipv4Address::new(10, 5, 1, 8), 24),
+        dns_servers: Vec::new(),
+        gateway: Some(Ipv4Address::new(10, 5, 1, 7)),
+    });
+```
+- also update ipAddress in +page.svelte to be the same as net_config.address
+`let ipAddress = $state("10.5.1.8");
 
-
-### 7. Setup car
-`cd embassy/examples/rp`
-#
-#### With debug probe
-
-`cargo run --bin crusty --release`
-#
-#### Without debug probe
+## Start dev environment and GUI
+from the crusty-gui/src-tauri directory, run:
 ```
 cargo install elf2uf2-rs
 cargo build --bin crusty --release
@@ -86,5 +96,28 @@ yarn tauri dev
 #### To get msi
 `yarn tauri build`
 
+
+## Setup car
+stand in embassy/examples/rp
+
+
+### With debug probe
+installation guide:
+https://probe.rs/docs/getting-started/installation
+
+`cargo run --bin crusty --release`
+
+
+### Without debug probe
+#### creates crusty.uf2 file in /crusty/embassy/examples/rp/target/thumbv6m-none-eabi/release
+
+`cargo install elf2uf2-rs`
+
+`cargo build --bin crusty --release`
+
+`elf2uf2-rs ./target/thumbv6m-none-eabi/release/crusty`
+
+
 ## Freenove car tutorial
 hardware-instructions.pdf in root
+
