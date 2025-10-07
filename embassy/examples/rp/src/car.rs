@@ -45,7 +45,7 @@ pub struct Car<'a> {
 }
 
 impl<'a> Car<'a> {
-    /// Set the car speed, clamped to 0-100
+    /// Set the car speed
     pub async fn set_speed(&mut self, speed: u8) {
         defmt::info!("Changing speed from {}% to {}%", self.speed, speed);
         self.speed = speed;
@@ -78,12 +78,18 @@ impl<'a> Car<'a> {
         self.rear_left.stop().await;
 
         if self.direction == Direction::Forward {
-            self.front_right.forward(speed).await;
-            self.rear_right.forward(speed).await;
+            self.front_right.forward(speed*2).await;
+            self.rear_right.forward(speed*2).await;
+
+            self.front_left.forward(speed/2).await;
+            self.rear_left.forward(speed/2).await;
         }
         else {
-            self.front_right.back(speed).await;
-            self.rear_right.back(speed).await;
+            self.front_right.back(speed*2).await;
+            self.rear_right.back(speed*2).await;
+
+            self.front_left.back(speed/2).await;
+            self.rear_left.back(speed/2).await;
         }
 
     }
@@ -95,12 +101,18 @@ impl<'a> Car<'a> {
         self.rear_right.stop().await;
 
         if self.direction == Direction::Forward {
-            self.front_left.forward(speed).await;
-            self.rear_left.forward(speed).await;
+            self.front_left.forward(speed*2).await;
+            self.rear_left.forward(speed*2).await;
+
+            self.front_right.forward(speed/2).await;
+            self.rear_right.forward(speed/2).await;
         }
         else {
-            self.front_left.back(speed).await;
-            self.rear_left.back(speed).await;
+            self.front_left.back(speed*2).await;
+            self.rear_left.back(speed*2).await;
+
+            self.front_right.back(speed/2).await;
+            self.rear_right.back(speed/2).await;
         }
     }
 
@@ -114,7 +126,6 @@ impl<'a> Car<'a> {
         self.direction = Direction::Still;
         self.set_speed(0);
     }
-
 
 
     /// Speed up 10%

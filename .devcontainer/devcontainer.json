@@ -1,0 +1,26 @@
+// For VS Code Dev Containers
+{
+  "name": "Crusty Dev Container",
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tauri-apps.tauri-vscode",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+  "postCreateCommand": "set -e && corepack enable && corepack prepare yarn@stable --activate && apt-get update && apt-get install -y build-essential pkg-config libgtk-3-dev libpango1.0-dev libcairo2-dev libgdk-pixbuf2.0-dev libssl-dev libudev-dev libjavascriptcoregtk-4.1-dev && cargo install tauri-cli || true && cargo install elf2uf2-rs || true && yarn install --cwd crusty-gui && yarn install --cwd crusty-gui/src-tauri",
+  "updateContentCommand": "yarn install --cwd crusty-gui && yarn install --cwd crusty-gui/src-tauri",
+  "remoteUser": "root"
+}
