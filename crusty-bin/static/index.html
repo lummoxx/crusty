@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crusty Car Control</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        button { margin: 0.5em; padding: 1em; font-size: 1.2em; }
+        input[type=range] { width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>Crusty Car Control</h1>
+    <div>
+        <label>Speed: <span id="speedValue">50</span></label>
+        <input type="range" id="speed" min="0" max="100" value="50">
+    </div>
+    <div>
+        <button onclick="sendCommand('forward')">Forward (↑)</button>
+        <button onclick="sendCommand('backward')">Backward (↓)</button>
+        <button onclick="sendCommand('left')">Left (←)</button>
+        <button onclick="sendCommand('right')">Right (→)</button>
+        <button onclick="sendCommand('stop')">Stop (Space)</button>
+    </div>
+    <script>
+        const speedInput = document.getElementById('speed');
+        const speedValue = document.getElementById('speedValue');
+        speedInput.oninput = () => speedValue.textContent = speedInput.value;
+
+        async function sendCommand(action) {
+            const speed = parseInt(speedInput.value, 10);
+            await fetch('/control', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, value: speed })
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
+            switch (e.key) {
+                case 'ArrowUp': sendCommand('forward'); break;
+                case 'ArrowDown': sendCommand('backward'); break;
+                case 'ArrowLeft': sendCommand('left'); break;
+                case 'ArrowRight': sendCommand('right'); break;
+                case ' ': sendCommand('stop'); break;
+            }
+        });
+    </script>
+</body>
+</html>

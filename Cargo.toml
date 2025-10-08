@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "crusty-bin",
+    "crusty-com",
+    "embassy\\examples\\rp"
+]
+resolver = "3"
+
+[patch.crates-io]
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", package = "embassy-executor" }
+embassy-time = { git = "https://github.com/embassy-rs/embassy", package = "embassy-time" }
+embassy-rp = { git = "https://github.com/embassy-rs/embassy", package = "embassy-rp" }
+cyw43 = { git = "https://github.com/embassy-rs/embassy", package = "cyw43" }
+cyw43-pio = { git = "https://github.com/embassy-rs/embassy", package = "cyw43-pio" }
+embassy-net = { git = "https://github.com/embassy-rs/embassy", package = "embassy-net" }
+embassy-sync = { git = "https://github.com/embassy-rs/embassy", package = "embassy-sync" }
+embassy-futures = { git = "https://github.com/embassy-rs/embassy", package = "embassy-futures" }
+embassy-usb = { git = "https://github.com/embassy-rs/embassy", package = "embassy-usb" }

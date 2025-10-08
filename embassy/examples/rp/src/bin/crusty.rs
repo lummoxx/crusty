@@ -164,11 +164,11 @@ async fn main(spawner: Spawner) {
     // unwrap!(spawner.spawn(line_sensor_task(right, left, middle, car)));
 
     // servo
-    let mut servo_config = PwmConfig::default();
-    servo_config.top = 20_000;; // 20ms period at 1MHz clock
-    servo_config.divider = 125u8.into(); // adjust for your clock
-    let servo_pwm_13 = Pwm::new_output_b(p.PWM_SLICE6, p.PIN_13, servo_config);
-    unwrap!(spawner.spawn(servo_task(servo_pwm_13)));
+    // let mut servo_config = PwmConfig::default();
+    // servo_config.top = 20_000;; // 20ms period at 1MHz clock
+    // servo_config.divider = 125u8.into(); // adjust for your clock
+    // let servo_pwm_13 = Pwm::new_output_b(p.PWM_SLICE6, p.PIN_13, servo_config);
+    // unwrap!(spawner.spawn(servo_task(servo_pwm_13)));
 
     // IR remote
     let ir_pin = Input::new(p.PIN_3, Pull::Up);
