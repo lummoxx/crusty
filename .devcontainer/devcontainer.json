@@ -1,0 +1,19 @@
+// For VS Code Dev Containers
+{
+  "name": "Crusty Minimal Dev Container",
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "rust-lang.rust-analyzer"
+      ]
+    }
+  },
+  "postCreateCommand": "apt-get update && apt-get install -y build-essential pkg-config libssl-dev libudev-dev && cargo install elf2uf2-rs || true && cargo install probe-rs || true",
+  "remoteUser": "root"
+}
