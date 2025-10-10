@@ -9,8 +9,6 @@ use defmt::*;
 use embassy_rp::pwm::SetDutyCycle;
 use defmt::{info, warn};
 use embassy_executor::Spawner;
-use embassy_net::Ipv4Address;
-use embassy_net::Ipv4Cidr;
 use embassy_net::Stack;
 use embassy_net::{tcp::TcpSocket, StackResources};
 use embassy_rp::i2c::{Async, I2c};
@@ -38,7 +36,9 @@ use shared::CarCommand;
 use smart_leds::RGB8;
 use {defmt_rtt as _, panic_probe as _};
 use embassy_rp::gpio::{Input, Pull};
+include!("../../wifi.rs");
 
+// ...now use WIFI_NETWORK and WIFI_PASSWORD as before...
 // Define interrupt handlers
 bind_interrupts!(struct Irqs {
     PIO0_IRQ_0 => InterruptHandler<PIO0>;
@@ -51,8 +51,6 @@ bind_interrupts!(struct Irqs {
 //     I2C0_IRQ => i2c::InterruptHandler<I2C0>;
 // });
 
-const WIFI_NETWORK: &str = ""; // change to your network SSID
-const WIFI_PASSWORD: &str = ""; // change to your network password
 
 
 #[embassy_executor::task]
@@ -109,9 +107,9 @@ async fn main(spawner: Spawner) {
         .await;
 
     let net_config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
-        address: Ipv4Cidr::new(Ipv4Address::new(10, 5, 1, 8), 24),
+        address: IP_ADDRESS,
         dns_servers: Vec::new(),
-        gateway: Some(Ipv4Address::new(10, 5, 1, 7)),
+        gateway: GATEWAY,
     });
 
     // Generate random seed
@@ -164,11 +162,11 @@ async fn main(spawner: Spawner) {
     // unwrap!(spawner.spawn(line_sensor_task(right, left, middle, car)));
 
     // servo
-    let mut servo_config = PwmConfig::default();
-    servo_config.top = 20_000;; // 20ms period at 1MHz clock
-    servo_config.divider = 125u8.into(); // adjust for your clock
-    let servo_pwm_13 = Pwm::new_output_b(p.PWM_SLICE6, p.PIN_13, servo_config);
-    unwrap!(spawner.spawn(servo_task(servo_pwm_13)));
+    // let mut servo_config = PwmConfig::default();
+    // servo_config.top = 20_000;; // 20ms period at 1MHz clock
+    // servo_config.divider = 125u8.into(); // adjust for your clock
+    // let servo_pwm_13 = Pwm::new_output_b(p.PWM_SLICE6, p.PIN_13, servo_config);
+    // unwrap!(spawner.spawn(servo_task(servo_pwm_13)));
 
     // IR remote
     let ir_pin = Input::new(p.PIN_3, Pull::Up);

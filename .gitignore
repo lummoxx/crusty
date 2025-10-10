@@ -14,3 +14,8 @@ Thumbs.db
 
 # VSCode settings (optional, if you don't want to share them)
 .vscode/
+
+# wifi credentials file
+embassy/examples/rp/wifi.rs
+.env
+**/.env

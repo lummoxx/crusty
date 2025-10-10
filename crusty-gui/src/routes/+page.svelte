@@ -24,7 +24,7 @@
 
   // State management
   let speed = $state(50);
-  let ipAddress = $state("10.5.1.8");
+  let ipAddress = $state(import.meta.env.VITE_IP_ADDRESS);
 
   // Handle key presses for keyboard control
   async function handleKeyDown(event: KeyboardEvent) {

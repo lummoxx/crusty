@@ -9,23 +9,32 @@ https://probe.rs/docs/getting-started/installation
 
 ### 4. Clone this repo
 
-### 5. Make some local changes
-- Set Wifi SSID and password (same as your computer is connected to) in crusty.rs
+### 5. Configure Local Network Settings
+
+Run the `setup_wifi.rs` script in the project root to set a unique IP address for your device and a unique gateway, both within the same subnet as your computer.
+
+**Example:**  
+If your PC has IP address `2.2.2.1` and subnet mask `255.255.255.0`, and no other machine is using `2.2.2.2` or `2.2.2.3`, you can use those as your device IP and gateway.
+
+**How to check:**
+- On **Windows**: Open a terminal and run `ipconfig`
+- On **Linux/macOS**: Open a terminal and run `ifconfig` or `ip addr`
+- To ensure the IPs are unused, run `ping <chosen-ip>` and `ping <chosen-gateway>`. If there is **no reply**, the address is available.
+
+**Set the IP and gateway:**
+Linux/macOS
+```sh
+rustc setup_wifi.rs && ./setup_wifi 2.2.2.2 2.2.2.3
 ```
-const WIFI_NETWORK: &str = ""; // change to your network SSID
-const WIFI_PASSWORD: &str = ""; // change to your network password
+Windows
+```sh
+rustc setup_wifi.rs
+./setup_wifi 2.2.2.2 2.2.2.3
 ```
-- Choose a unique IP address in the same subnet as your computer and update net_config.address in crusty.rs
-- Choose a unique gateway in the same subnet as your computer and update net_config.gateway in crusty.rs
-```
-    let net_config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
-        address: Ipv4Cidr::new(Ipv4Address::new(10, 5, 1, 8), 24),
-        dns_servers: Vec::new(),
-        gateway: Some(Ipv4Address::new(10, 5, 1, 7)),
-    });
-```
-- also update ipAddress in +page.svelte to be the same as net_config.address
-`let ipAddress = $state("10.5.1.8");
+*(On Windows PowerShell, use `.\setup_wifi.exe 2.2.2.2 2.2.2.3`)*
+
+When prompted, enter your WiFi network name (SSID) and WiFi password.  
+These will be securely written to your local configuration file and are required for the device to connect to your network.
 
 ### 6. Setup dev environment
 `cargo install tauri-cli` or `npm install -g @tauri-apps/cli`
