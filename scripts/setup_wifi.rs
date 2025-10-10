@@ -28,7 +28,7 @@ fn main() -> io::Result<()> {
     let gateway = args.next().expect("Usage: set_ip <ip-address> <gateway-ip>");
 
     // 1. Ensure crusty-gui directory exists, then write to .env
-    let gui_dir = Path::new("crusty-gui");
+    let gui_dir = Path::new("../crusty-gui");
     if !gui_dir.exists() {
         fs::create_dir_all(gui_dir)?;
     }
@@ -37,7 +37,7 @@ fn main() -> io::Result<()> {
     println!("Updated {}", gui_env_path.display());
 
     // 2. Update or create wifi.rs
-    let wifi_path = Path::new("embassy/examples/rp/wifi.rs");
+    let wifi_path = Path::new("../embassy/examples/rp/wifi.rs");
     let ip_parts: Vec<&str> = ip.split('.').collect();
     let gw_parts: Vec<&str> = gateway.split('.').collect();
     if ip_parts.len() != 4 || gw_parts.len() != 4 {

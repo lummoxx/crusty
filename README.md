@@ -13,9 +13,10 @@ You can start developing immediately in your browser, with all dependencies pre-
 ### You need to add wifi credentials
 
 #### Option 1. Using crate setup_wifi to automate finding a suitable ip address
-```
+```sh
 cd setup_wifi
 cargo run
+cd ..
 ```
 
 When prompted, enter your WiFi network name (SSID) and WiFi password.  
@@ -36,12 +37,16 @@ If your PC has IP address `2.2.2.1` and subnet mask `255.255.255.0`, and no othe
 **Set the IP and gateway:**
 Linux/macOS
 ```sh
+cd scripts
 rustc setup_wifi.rs && ./setup_wifi 2.2.2.2 2.2.2.3
+cd ..
 ```
 Windows
 ```sh
+cd scripts
 rustc setup_wifi.rs
 ./setup_wifi 2.2.2.2 2.2.2.3
+cd ..
 ```
 *(On Windows PowerShell, use `.\setup_wifi.exe 2.2.2.2 2.2.2.3`)*
 
