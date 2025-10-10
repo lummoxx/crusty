@@ -10,7 +10,17 @@ https://probe.rs/docs/getting-started/installation
 ### 4. Clone this repo
 
 ### 5. Configure Local Network Settings
+#### Option 1. Using crate setup_wifi to automate finding a suitable ip address
+```
+cd setup_wifi
+cargo run
+```
 
+When prompted, enter your WiFi network name (SSID) and WiFi password.  
+These will be securely written to your local configuration file and are required for the device to connect to your network.
+note: It must be the same wifi as your local machine is running on.
+
+#### Option 2. Using script setup_wifi.rs with specific ip address and gateway
 Run the `setup_wifi.rs` script in the project root to set a unique IP address for your device and a unique gateway, both within the same subnet as your computer.
 
 **Example:**  
@@ -35,6 +45,7 @@ rustc setup_wifi.rs
 
 When prompted, enter your WiFi network name (SSID) and WiFi password.  
 These will be securely written to your local configuration file and are required for the device to connect to your network.
+note: It must be the same wifi as your local machine is running on.
 
 ### 6. Setup dev environment
 `cargo install tauri-cli` or `npm install -g @tauri-apps/cli`
