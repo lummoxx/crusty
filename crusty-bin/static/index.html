@@ -21,7 +21,7 @@
         <button onclick="sendCommand('backward')">Backward (↓)</button>
         <button onclick="sendCommand('left')">Left (←)</button>
         <button onclick="sendCommand('right')">Right (→)</button>
-        <button onclick="sendCommand('stop')">Stop (Space)</button>
+        <button onclick="sendCommand('stop')">Stop (.)</button>
     </div>
     <script>
         const speedInput = document.getElementById('speed');
@@ -44,7 +44,7 @@
                 case 'ArrowDown': sendCommand('backward'); break;
                 case 'ArrowLeft': sendCommand('left'); break;
                 case 'ArrowRight': sendCommand('right'); break;
-                case ' ': sendCommand('stop'); break;
+                case '.': sendCommand('stop'); break;
             }
         });
     </script>
