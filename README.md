@@ -89,10 +89,10 @@ After configuring wifi, you can now flash the firmware to the Pico.
 
 #### With debug probe
 
-`cargo run --bin crusty --release`
+`cargo run --bin crusty --release --target thumbv6m-none-eabi`
 #### Without debug probe
 ```
-cargo build --bin crusty --release
+cargo build --bin crusty --release --target thumbv6m-none-eabi
 elf2uf2-rs ./target/thumbv6m-none-eabi/release/crusty
 ```
 
