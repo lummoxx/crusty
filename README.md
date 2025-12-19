@@ -35,6 +35,7 @@ const WIFI_PASSWORD: &str = ""; // change to your network password
 - Choose a unique IP address in the same subnet as your computer and update net_config.address in crusty.rs
 - Choose a unique gateway in the same subnet as your computer and update net_config.gateway in crusty.rs
 
+
 (if your computer's IP is 10.5.185 with subnet mask 255.255.255.0 you can use something like this)
 ```
     let net_config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
@@ -48,6 +49,8 @@ const WIFI_PASSWORD: &str = ""; // change to your network password
 // Set your Pico's IP address here:
 const PICO_IP: &str = "10.5.1.8:1234";
 ```
+
+Make sure the IP address and gateway you choose are not already in use on your network.
 
 ### Setup car
 After configuring wifi, you can now flash the firmware to the Pico.
@@ -75,7 +78,7 @@ this creates `crusty.uf2` file in `/crusty/embassy/examples/rp/target/thumbv6m-n
 
 ``cargo run --bin crusty-bin``
 
-**or from the package dir**
+**or go to the package dir**
 ```
 cd crusty-bin
 cargo run
@@ -87,16 +90,15 @@ This will start a local web server. Open your web browser and navigate to `http:
 hardware-instructions.pdf in root
 
 ## Develop
-In files:
+To modify or extend the functionality of the Crusty car, you can edit the following source files:
 
 - embassy/examples/rp/src/bin/crusty.rs 
 - embassy/examples/rp/src/car.rs
 
-you can modify the code to change car behavior.
 
 ## Embassy Framework
 Our project uses the Embassy framework for embedded Rust development.
 Refer to the [Embassy documentation](https://embassy.dev/) for guidance on using the framework and its features.
 
 ## Troubleshooting
-If you encounter issues during setup or development, please open an issue on the GitHub repository for assistance.
+If you encounter issues during setup or development, please open an issue on the GitHub repository.

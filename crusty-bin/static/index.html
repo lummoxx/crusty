@@ -1,27 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crusty Car Control</title>
     <style>
-        body { font-family: sans-serif; margin: 2em; }
-        button { margin: 0.5em; padding: 1em; font-size: 1.2em; }
-        input[type=range] { width: 200px; }
+        :root{
+            --bg:#0f1720;
+            --card:#111827;
+            --accent:#06b6d4;
+            --muted:#94a3b8;
+            --btn-bg:#1f2937;
+            --btn-hover:#111827;
+            --radius:10px;
+        }
+        html,body{height:100%;margin:0}
+        body{
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: linear-gradient(180deg,#071026 0%, #061823 100%);
+            color:#e6eef6;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:2rem;
+        }
+        .card{
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 6px 30px rgba(2,6,23,0.7);
+            padding:1.5rem;
+            border-radius:var(--radius);
+            width:100%;
+            max-width:720px;
+        }
+        h1{margin:0 0 .5rem;font-size:1.5rem}
+        .subtitle{color:var(--muted);margin-bottom:1rem;font-size:.95rem}
+
+        .controls{
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap:1rem;
+            align-items:center;
+        }
+
+        .speed-box{
+            display:flex;
+            flex-direction:column;
+            gap:.5rem;
+            align-items:flex-start;
+        }
+        .speed-row{display:flex;align-items:center;gap:.75rem}
+        #speed{width:220px}
+        #speedValue{font-weight:600;color:var(--accent);min-width:36px;text-align:center}
+
+        .buttons{
+            display:grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap:0.6rem;
+            align-items:center;
+            justify-items:center;
+        }
+        button{
+            background:var(--btn-bg);
+            color:#e6eef6;
+            border:1px solid rgba(255,255,255,0.04);
+            padding:.85rem 1rem;
+            border-radius:8px;
+            font-size:1rem;
+            cursor:pointer;
+            width:100%;
+            transition:transform .06s ease, background .12s;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:.5rem;
+        }
+        button:hover{transform:translateY(-2px); background:var(--btn-hover)}
+        button:active{transform:translateY(0)}
+        .kbd{background:rgba(255,255,255,0.04);padding:.12rem .4rem;border-radius:6px;font-size:.85rem;color:var(--muted)}
+        .full-row{grid-column:1/4}
+
+        .hint{margin-top:.9rem;color:var(--muted);font-size:.85rem;text-align:right}
+        @media (max-width:520px){
+            .controls{grid-template-columns:1fr}
+            .buttons{grid-template-columns: repeat(3, 1fr)}
+            #speed{width:100%}
+        }
     </style>
 </head>
 <body>
-    <h1>Crusty Car Control</h1>
-    <div>
-        <label>Speed: <span id="speedValue">50</span></label>
-        <input type="range" id="speed" min="0" max="100" value="50">
-    </div>
-    <div>
-        <button onclick="sendCommand('forward')">Forward (↑)</button>
-        <button onclick="sendCommand('backward')">Backward (↓)</button>
-        <button onclick="sendCommand('left')">Left (←)</button>
-        <button onclick="sendCommand('right')">Right (→)</button>
-        <button onclick="sendCommand('stop')">Stop (.)</button>
+    <div class="card">
+        <h1>Crusty Car Control</h1>
+        <div class="subtitle">Use buttons or arrow keys. Adjust speed then send commands.</div>
+
+        <div class="controls">
+            <div class="speed-box">
+                <label>Speed: <span id="speedValue">50</span></label>
+                <div class="speed-row">
+                    <input type="range" id="speed" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <div class="buttons" aria-label="controls">
+                <button onclick="sendCommand('left')" title="Left">
+                    ◀ <span class="kbd">←</span>
+                </button>
+
+                <button onclick="sendCommand('forward')" title="Forward">
+                    ▲ <span class="kbd">↑</span>
+                </button>
+
+                <button onclick="sendCommand('rigt')" title="Right">
+                    ▶ <span class="kbd">→</span>
+                </button>
+                <button onclick="sendCommand('stop')" title="Stop">
+                    ■ <span class="kbd">.</span>
+                </button>
+                <button onclick="sendCommand('backward')" title="Backward">
+                    ▼ <span class="kbd">↓</span>
+                </button>
+                <div></div>
+            </div>
+        </div>
+
+        <div class="hint">Tip: Hold keys for continuous control. Focus this tab and use arrow keys.</div>
     </div>
     <script>
         const speedInput = document.getElementById('speed');
