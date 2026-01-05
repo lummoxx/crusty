@@ -2,10 +2,15 @@ use std::io::{self, BufRead, Read, Write};
 use std::net::TcpStream;
 use std::str;
 
+include!("../../wifi.rs");
+
 fn main() -> io::Result<()> {
-    // Default connection parameters
-    let host = "192.168.0.177";
-    let port = 1234;
+    // Default connection parameters (port comes from shared wifi.rs)
+    let host = std::env::var("PICO_HOST").unwrap_or_else(|_| {
+        format!("{}.{}.{}.{}",
+                ADDRESS_OCTETS[0], ADDRESS_OCTETS[1], ADDRESS_OCTETS[2], ADDRESS_OCTETS[3])
+    });
+    let port = PICO_PORT;
 
     println!("Attempting to connect to {}:{}", host, port);
 

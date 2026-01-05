@@ -1,11 +1,12 @@
 use axum::{routing::{get, post}, Router, extract::State, http::StatusCode, Json};
 use shared::CarCommand;
 use bincode;
-use std::net::ToSocketAddrs;
 use tower_http::services::ServeDir;
 use std::{net::SocketAddr, sync::Arc};
 use tokio::sync::Mutex;
 use serde::Deserialize;
+
+include!("../../wifi.rs");
 // use crusty_controller::car::{initialize_car, Car, Direction};
 
 // Placeholder for your hardware control struct implementing embedded-hal traits
@@ -24,8 +25,6 @@ struct ControlCommand {
     value: Option<i32>,
 }
 
-// Set your Pico's IP address here:
-const PICO_IP: &str = "10.5.1.8:1234";
 
 // Control API handler (POST /control)
 async fn control_handler(
@@ -55,7 +54,17 @@ async fn control_handler(
     };
 
     // Send to Pico over TCP
-    match tokio::net::TcpStream::connect(PICO_IP).await {
+    // Build socket address from included octet constants
+    let pico_addr = format!(
+        "{}.{}.{}.{}:{}",
+        ADDRESS_OCTETS[0],
+        ADDRESS_OCTETS[1],
+        ADDRESS_OCTETS[2],
+        ADDRESS_OCTETS[3],
+        PICO_PORT
+    );
+
+    match tokio::net::TcpStream::connect(pico_addr).await {
         Ok(mut stream) => {
             if let Err(e) = tokio::io::AsyncWriteExt::write_all(&mut stream, &encoded).await {
                 println!("TCP write error: {:?}", e);
@@ -78,8 +87,8 @@ async fn main() {
 
     // Build axum app
     let app = Router::new()
-        // Serve static files from ./static
-        .nest_service("/", ServeDir::new("./static"))
+        // Serve static files from crate's static dir (works when run from workspace root)
+        .nest_service("/", ServeDir::new(concat!(env!("CARGO_MANIFEST_DIR"), "/static")))
         .route("/control", post(control_handler))
         .with_state(state);
 

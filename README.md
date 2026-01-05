@@ -15,6 +15,7 @@ We recommend using a debug probe for easier development, but it's optional. Our 
 
 #### If using debug probe, install probe-rs
 https://probe.rs/docs/getting-started/installation
+if probe-rs does not work, you can still flash using elf2uf2-rs below
 
 #### If not using debug probe, install elf2uf2-rs
 `cargo install elf2uf2-rs `
@@ -27,27 +28,19 @@ When you have your hardware in front of you, you can proceed to set up the local
 
 ### Configure Local Network Settings
 #### You need to add wifi credentials
-- Set Wifi SSID and password (same as your computer is connected to) in crusty.rs
-```
-const WIFI_NETWORK: &str = ""; // change to your network SSID
-const WIFI_PASSWORD: &str = ""; // change to your network password
-```
-- Choose a unique IP address in the same subnet as your computer and update net_config.address in crusty.rs
-- Choose a unique gateway in the same subnet as your computer and update net_config.gateway in crusty.rs
+- Set Wifi SSID and password (same as your computer is connected to) in wifi.rs (in root)
+- Choose a unique IP address in the same subnet as your computer
+- Choose a unique gateway in the same subnet as your computer
 
 
-(if your computer's IP is 10.5.185 with subnet mask 255.255.255.0 you can use something like this)
-```
-    let net_config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
-        address: Ipv4Cidr::new(Ipv4Address::new(10, 5, 1, 8), 24),
-        dns_servers: Vec::new(),
-        gateway: Some(Ipv4Address::new(10, 5, 1, 7)),
-    });
-```
-- also update ipAddress in crusty-bin/src/main.rs to be the same as net_config.address
-```
-// Set your Pico's IP address here:
-const PICO_IP: &str = "10.5.1.8:1234";
+(if your computer's IP is 10.5.1.185 with subnet mask 255.255.255.0 you can set them to:
+```rust
+    const WIFI_SSID: &str = "your-wifi-ssid";
+    const WIFI_PASSWORD: &str = "your-wifi-password";)
+
+    const ADDRESS_OCTETS: [u8; 4] = [10, 5, 1, 2];
+
+    const GATEWAY_OCTETS: [u8; 4] = [10, 5, 1, 3];
 ```
 
 Make sure the IP address and gateway you choose are not already in use on your network.
@@ -58,16 +51,17 @@ After configuring wifi, you can now flash the firmware to the Pico.
 `cd embassy/examples/rp`
 
 #### With debug probe
+connect the debug probe to your computer, then run:
 
 `cargo run --bin crusty --release`
-#### Without debug probe
+#### Without debug probe (or if probe-rs fails)
+run the following commands:
 ```
 cargo build --bin crusty --release
 elf2uf2-rs ./target/thumbv6m-none-eabi/release/crusty
 ```
-
 this creates `crusty.uf2` file in `/crusty/embassy/examples/rp/target/thumbv6m-none-eabi/release`
-
+to flash the firmware to the Pico, follow these steps:
 1. Hold the BOOTSEL button on your Pico and connect it to your computer via USB.
 2. The Pico will appear as a USB drive.
 3. Copy the extracted `.uf2` file onto the Pico’s USB drive.

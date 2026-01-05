@@ -2,15 +2,14 @@
 #![no_main]
 
 use core::str::from_utf8;
-
+use embassy_net::Ipv4Address;
+use embassy_net::Ipv4Cidr;
 use cyw43::{Control, JoinOptions};
 use cyw43_pio::{PioSpi, DEFAULT_CLOCK_DIVIDER};
 use defmt::*;
 use embassy_rp::pwm::SetDutyCycle;
 use defmt::{info, warn};
 use embassy_executor::Spawner;
-use embassy_net::Ipv4Address;
-use embassy_net::Ipv4Cidr;
 use embassy_net::Stack;
 use embassy_net::{tcp::TcpSocket, StackResources};
 use embassy_rp::i2c::{Async, I2c};
@@ -38,7 +37,20 @@ use shared::CarCommand;
 use smart_leds::RGB8;
 use {defmt_rtt as _, panic_probe as _};
 use embassy_rp::gpio::{Input, Pull};
+include!("../../../../../wifi.rs");
 
+
+// Build embedded types from the shared `wifi.rs` octet constants
+const IP_ADDRESS: Ipv4Cidr = Ipv4Cidr::new(
+    Ipv4Address::new(ADDRESS_OCTETS[0], ADDRESS_OCTETS[1], ADDRESS_OCTETS[2], ADDRESS_OCTETS[3]),
+    ADDRESS_PREFIX,
+);
+const GATEWAY: Option<Ipv4Address> = Some(Ipv4Address::new(
+    GATEWAY_OCTETS[0],
+    GATEWAY_OCTETS[1],
+    GATEWAY_OCTETS[2],
+    GATEWAY_OCTETS[3],
+));
 // Define interrupt handlers
 bind_interrupts!(struct Irqs {
     PIO0_IRQ_0 => InterruptHandler<PIO0>;
@@ -50,9 +62,6 @@ bind_interrupts!(struct Irqs {
 // bind_interrupts!(struct IC2Irqs {
 //     I2C0_IRQ => i2c::InterruptHandler<I2C0>;
 // });
-
-const WIFI_NETWORK: &str = ""; // change to your network SSID
-const WIFI_PASSWORD: &str = ""; // change to your network password
 
 
 #[embassy_executor::task]
@@ -107,11 +116,11 @@ async fn main(spawner: Spawner) {
     control
         .set_power_management(cyw43::PowerManagementMode::PowerSave)
         .await;
-
+    
     let net_config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
-        address: Ipv4Cidr::new(Ipv4Address::new(10, 5, 1, 8), 24),
+        address: IP_ADDRESS,
         dns_servers: Vec::new(),
-        gateway: Some(Ipv4Address::new(10, 5, 1, 7)),
+        gateway: GATEWAY,
     });
 
     // Generate random seed
@@ -308,7 +317,7 @@ async fn led_task(mut pio: Pio<'static, PIO1>, dma: Peri<'static, DMA_CH1>, pin:
     loop {
         for j in 0..(256 * 5) {
             for i in 0..NUM_LEDS {
-                data[i] = wheel((((i * 256) as u16 / NUM_LEDS as u16 + j as u16) & 255) as u8);
+                data[i] = blue_lights((((i * 256) as u16 / NUM_LEDS as u16 + j as u16) & 255) as u8);
             }
             ws2812.write(&data).await;
             ticker.next().await;
@@ -362,9 +371,9 @@ async fn tcp_task(stack: Stack<'static>, mut control: Control<'static>, car: &'s
 
         // Set LED off while waiting for connection
         control.gpio_set(0, false).await;
-        info!("Listening on TCP:1234...");
+        info!("Listening on TCP:{}...", PICO_PORT);
 
-        if let Err(e) = socket.accept(1234).await {
+        if let Err(e) = socket.accept(PICO_PORT).await {
             warn!("accept error: {:?}", e);
             continue;
         }
